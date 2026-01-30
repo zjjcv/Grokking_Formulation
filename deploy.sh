@@ -12,7 +12,7 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 # 配置 - 请修改为您的实际仓库地址
-REPO_URL="YOUR_GITHUB_REPO_URL_HERE"  # 例如: https://github.com/username/Grokking_Formulation.git
+REPO_URL="https://github.com/zjjcv/Grokking_Formulation.git"
 BRANCH="main"
 
 # 检查参数
