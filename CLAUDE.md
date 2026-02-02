@@ -2,45 +2,72 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Repository Overview
+## Project Overview
 
-研究项目，探索神经网络中的 Grokking 现象及其理论解释。Grokking 是指神经网络在长期训练后突然从记忆模式泛化到理解模式的现象。
+This is a theoretical research project investigating the Grokking phenomenon in neural networks - where models suddenly transition from memorization to generalization after prolonged training on modular arithmetic tasks.
 
-## Project Structure
+## Common Commands
 
-```
-├── src/                    # 源代码 (Python)
-├── experiments/
-│   ├── figures/           # 实验生成的图表
-│   └── logs/              # 实验运行日志
-├── data/                  # 数据集
-├── configs/               # 配置文件
-└── writing/
-    ├── paper/             # 论文手稿
-    └── notes/             # 研究笔记
-```
-
-## Development
-
-### 设置环境
+### Training
 ```bash
-# 创建虚拟环境 (推荐)
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# 或 venv\Scripts\activate  # Windows
+# Run Grokking reproduction experiment (x + y mod 97)
+python src/grokking_reproduce.py
+```
 
-# 安装依赖
+### Visualization
+```bash
+# Generate training curves from metric.csv
+python src/training_plot.py
+```
+
+### Deployment
+```bash
+# Deploy to GitHub (auto-commit and push)
+./deploy.sh "commit message"
+```
+
+### Dependencies
+```bash
 pip install -r requirements.txt
 ```
 
-### 运行实验
-```bash
-# 运行主实验脚本
-python src/main.py --config configs/default.yaml
-```
+## Code Architecture
 
-### 权限
-以下 bash 命令已预授权:
-- `python:*` - Python 执行
-- `ls:*` - 目录列表
-- `find:*` - 文件搜索
+### Core Components
+
+**src/grokking_reproduce.py** - Main training script
+- `Config`: Central configuration class (model params, training hyperparams, paths)
+- `ModuloDataset`: Generates (x, y) pairs for modular arithmetic, splits 50/50 train/test
+- `GrokkingTransformer`: 2-layer Transformer with:
+  - Multi-head attention (4 heads, dim 128)
+  - Feed-forward networks (dim 512)
+  - Learned positional encoding
+  - Input format: [x, op_token, y] where op_token = p
+- `WarmupCosineScheduler`: Warmup (2000 steps) + cosine decay for 100K total steps
+- Training loop saves metrics every 100 steps to CSV and checkpoints
+
+**src/training_plot.py** - Visualization script
+- Reads `data/x+y/metric.csv` (columns: step, train_loss, train_acc, test_loss, test_acc)
+- Generates dual-plot figure (accuracy + loss) with log-scale x-axis
+- Outputs PNG and PDF to `experiments/figures/`
+
+### Data Flow
+
+1. Training generates `data/x+y/metric.csv` and checkpoints to `data/x+y/checkpoints/`
+2. Plot script reads metric.csv, outputs to `experiments/figures/training_curves.png`
+
+### Key Configuration
+
+Critical hyperparameters in `Config` class:
+- `p = 97`: Modulus for arithmetic
+- `weight_decay = 0.1`: High regularization is key for Grokking
+- `total_steps = 100000`: Extended training enables delayed generalization
+- `save_interval = 100`: Controls metric logging frequency
+
+## Current Status
+
+The x+y (mod 97) experiment has been run but did NOT exhibit Grokking:
+- Train accuracy: 100%
+- Test accuracy: ~25% (no sudden generalization)
+
+This suggests hyperparameter tuning may be needed (e.g., lower weight decay, different architecture).

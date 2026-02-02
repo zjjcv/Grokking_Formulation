@@ -35,13 +35,11 @@ env/
 *.ckpt
 
 # Data
-data/raw/
-data/processed/*.csv
-data/*.pkl
+data/*
 
 # Logs
 *.log
-experiments/logs/*.log
+experiments/*
 
 # OS
 .DS_Store
