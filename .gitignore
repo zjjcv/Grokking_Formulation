@@ -29,17 +29,20 @@ env/
 .ipynb_checkpoints
 *.ipynb_checkpoints/
 
-# PyTorch
+# PyTorch - 排除所有大型模型文件
 *.pth
 *.pt
 *.ckpt
 
-# Data
-data/*
+# Data - 完全排除数据目录
+data/
+
+# Experiments - 排除所有生成的文件
+experiments/
 
 # Logs
 *.log
-experiments/*
+logs/
 
 # OS
 .DS_Store
@@ -55,3 +58,13 @@ Thumbs.db
 # Temporary files
 *.tmp
 temp/
+
+# Archive (备份文件，不需要上传)
+archive/
+
+# Only allow scripts and documentation
+!scripts/
+!*.md
+!requirements.txt
+!.gitignore
+!LICENSE
